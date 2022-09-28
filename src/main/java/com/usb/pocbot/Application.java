@@ -4,11 +4,18 @@
 package com.usb.pocbot;
 
 import com.microsoft.bot.builder.Bot;
+import com.microsoft.bot.builder.ConversationState;
+import com.microsoft.bot.builder.UserState;
+import com.microsoft.bot.dialogs.Dialog;
 import com.microsoft.bot.integration.AdapterWithErrorHandler;
 import com.microsoft.bot.integration.BotFrameworkHttpAdapter;
 import com.microsoft.bot.integration.Configuration;
 import com.microsoft.bot.integration.spring.BotController;
 import com.microsoft.bot.integration.spring.BotDependencyConfiguration;
+
+import com.usb.pocbot.cards.CertificationCardsBot;
+import com.usb.pocbot.cards.MainDialog;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +55,27 @@ public class Application extends BotDependencyConfiguration {
      * @return The Bot implementation for this application.
      */
     @Bean
-    public Bot getBot() {
-        return new EchoBot();
+    public Bot getBot(
+        ConversationState conversationState,
+        UserState userState,
+        Dialog rootDialog
+    ) {
+        return new CertificationCardsBot(conversationState, userState, rootDialog);
+    }
+
+    /**
+     * Returns the starting Dialog for this application.
+     *
+     * <p>
+     *     The @Component annotation could be used on the Dialog class instead of this method
+     *     with the @Bean annotation.
+     * </p>
+     *
+     * @return The Dialog implementation for this application.
+     */
+    @Bean
+    public Dialog getRootDialog() {
+        return new MainDialog();
     }
 
     /**

@@ -69,6 +69,14 @@
         <version>4.14.0</version>
         <scope>compile</scope>
       </dependency>
+      <!--Added by Padmaja-->
+ <dependency>
+        <groupId>com.microsoft.bot</groupId>
+        <artifactId>bot-dialogs</artifactId>
+        <version>4.14.1</version>
+        <scope>compile</scope>
+      </dependency>
+<!--Padmaja-->
   </dependencies>
 
   <repositories>
@@ -138,7 +146,7 @@
                   <configuration>
                       <schemaVersion>V2</schemaVersion>
                       <resourceGroup>${groupname}</resourceGroup>
-                      <appName>${botname}</appName>
+          <!--            <appName>${botname}</appName>-->
                        <region>westus</region>
                       <appSettings>
                           <property>

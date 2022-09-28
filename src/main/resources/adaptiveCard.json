@@ -1,0 +1,53 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "type": "AdaptiveCard",
+
+ "body": [
+
+        {
+
+            "type": "TextBlock",
+
+            "size": "Medium",
+
+            "weight": "Bolder",
+
+            "text": "Cloud Models"
+
+        },
+
+        {
+
+            "type": "TextBlock",
+
+            "text": "The cloud models define the deployment type of cloud resources. The three main cloud models are: private, public, and hybrid.",
+
+            "wrap": true
+
+        },
+
+        {
+
+            "type": "Image",
+
+            "url": "https://www.sevenconsulting.com/wp-content/uploads/2020/10/graphic01-2.png"
+
+        }
+
+    ],
+
+    "actions": [
+
+        {
+
+            "type": "Action.OpenUrl",
+
+            "title": "Learn More",
+
+            "url": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/5-define-cloud-models?ns-enrollment-type=learningpath&ns-enrollment-id=learn.wwl.microsoft-azure-fundamentals-describe-cloud-concepts"
+
+        }
+
+    ]
+}
