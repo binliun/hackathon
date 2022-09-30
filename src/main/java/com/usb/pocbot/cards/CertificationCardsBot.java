@@ -37,9 +37,8 @@ public class CertificationCardsBot extends DialogBot<Dialog> {
             .map(channel -> {
                 // Greet anyone that was not the target (recipient) of this message.
                 // To learn more about Adaptive Cards, see https://aka.ms/msbot-adaptivecards for more details.
-                Activity reply = MessageFactory.text("Welcome to Azure Certification topics on Fundamentals."
-                   // + " This bot will show you different types of Certifications and topics."
-                    + " How can I help you today?");
+                Activity reply = MessageFactory.text("Hello!! This bot will help you search for different Azure certification."
+                   + " Please type any message to continue!");
 
                 return turnContext.sendActivity(reply);
             })

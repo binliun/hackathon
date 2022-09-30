@@ -3,58 +3,74 @@
 
 package com.usb.pocbot.cards;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.microsoft.bot.schema.ActionTypes;
-import com.microsoft.bot.schema.AnimationCard;
-import com.microsoft.bot.schema.Attachment;
-import com.microsoft.bot.schema.AudioCard;
-import com.microsoft.bot.schema.CardAction;
-import com.microsoft.bot.schema.CardImage;
-import com.microsoft.bot.schema.Fact;
-import com.microsoft.bot.schema.HeroCard;
-import com.microsoft.bot.schema.MediaUrl;
-import com.microsoft.bot.schema.OAuthCard;
-import com.microsoft.bot.schema.ReceiptCard;
-import com.microsoft.bot.schema.ReceiptItem;
-import com.microsoft.bot.schema.SigninCard;
-import com.microsoft.bot.schema.ThumbnailCard;
-import com.microsoft.bot.schema.ThumbnailUrl;
-import com.microsoft.bot.schema.VideoCard;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletionException;
-import org.apache.commons.io.IOUtils;
+import com.microsoft.bot.schema.*;
+import net.minidev.json.JSONObject;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
+
+import java.io.*;
 
 public class Cards {
-    public static Attachment createAdaptiveCardAttachment() {
-        Attachment adaptiveCardAttachment = new Attachment();
-
-        try (
-            InputStream inputStream = adaptiveCardAttachment.getClass().getClassLoader()
-            .getResourceAsStream("adaptiveCard.json")
-        ) {
-            String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-
-            adaptiveCardAttachment.setContentType("application/vnd.microsoft.card.adaptive");
-            adaptiveCardAttachment.setContent(new ObjectMapper().readValue(result, ObjectNode.class));
-
-            return adaptiveCardAttachment;
-        } catch (Throwable t) {
-            throw new CompletionException(t);
-        }
+    public static Attachment createAdaptiveCardAttachment(String userChoice) {
+        return new Attachment();
     }
 
-    public static HeroCard getHeroCard() {
-        HeroCard heroCard = new HeroCard();
-        heroCard.setTitle("BotFramework Hero Card");
-        heroCard.setSubtitle("Microsoft Bot Framework");
-        heroCard.setText("Build and connect intelligent bots to interact with your users naturally wherever they are," +
-                    " from text/sms to Skype, Slack, Office 365 mail and other popular services.");
-        heroCard.setImages(new CardImage("https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg"));
-        heroCard.setButtons(new CardAction(ActionTypes.OPEN_URL, "Get Started", "https://docs.microsoft.com/bot-framework"));
+    public static HeroCard getHeroCard(String userChoice) {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost =
+                new HttpPost("https://first-qna1.cognitiveservices.azure.com/language/:query-knowledgebases?projectName=azure-certifications&api-version=2021-10-01&deploymentName=production");
+        Header key = new BasicHeader("Ocp-Apim-Subscription-Key", "1da7bbc6d6c640a9a417cc488cde1533");
+        Header contentType = new BasicHeader("Content-Type", "application/json");
+        httpPost.setHeaders(new Header[] {contentType, key});
+        JSONObject json = new JSONObject();
+        System.out.println(userChoice);
+        json.put("question", userChoice);
+        json.put("includeUnstructuredSources", "true");
+        try {
+            HeroCard heroCard = new HeroCard();
+            HttpEntity requestEntity = new StringEntity(json.toString());
+            Attachment attachment = new Attachment();
 
-        return heroCard;
+            httpPost.setEntity(requestEntity);
+            HttpResponse response = httpClient.execute(httpPost);
+
+            HttpEntity entity = response.getEntity();
+            String retResponse = EntityUtils.toString(entity);
+            System.out.println(retResponse);
+            ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            KnowledgeBaseResponse kbResponse = objectMapper.readValue(retResponse, KnowledgeBaseResponse.class);
+
+            System.out.println(kbResponse.getAnswers());
+            if(kbResponse != null && kbResponse.getAnswers().length > 0) {
+                Answer ans = kbResponse.getAnswers()[0];
+                String resp = ans.getAnswer();
+                if (resp != null) {
+                    AdaptiveResponse adaptiveResponse = objectMapper.readValue(resp, AdaptiveResponse.class);
+                    heroCard.setTitle(adaptiveResponse.title);
+                    heroCard.setText(adaptiveResponse.desc);
+                    heroCard.setImages(new CardImage(adaptiveResponse.imageUrl));
+                    heroCard.setButtons(new CardAction(ActionTypes.OPEN_URL, "Learn More", adaptiveResponse.learnMoreUrl));
+                }
+            }
+            return heroCard;
+
+        } catch (UnsupportedEncodingException ec) {
+            throw new AssertionError(ec.getMessage());
+        } catch (ClientProtocolException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static ThumbnailCard getThumbnailCard() {

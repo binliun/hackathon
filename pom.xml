@@ -48,6 +48,12 @@
         <scope>test</scope>
       </dependency>
 
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-cosmos</artifactId>
+            <version>4.11.0</version>
+        </dependency>
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
@@ -76,7 +82,22 @@
         <version>4.14.1</version>
         <scope>compile</scope>
       </dependency>
-<!--Padmaja-->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.13</version>
+        </dependency>
+        <!--Padmaja-->
   </dependencies>
 
   <repositories>
@@ -145,7 +166,7 @@
                   <version>1.7.0</version>
                   <configuration>
                       <schemaVersion>V2</schemaVersion>
-                      <resourceGroup>${groupname}</resourceGroup>
+                      <!--  <resourceGroup>${groupname}</resourceGroup> -->
           <!--            <appName>${botname}</appName>-->
                        <region>westus</region>
                       <appSettings>
